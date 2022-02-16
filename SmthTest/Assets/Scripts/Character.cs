@@ -10,8 +10,14 @@ public class Character : Unit
     private int lives = 5;
     [SerializeField]
     private float jumpForce = 15.0F;
-
+    //[SerializeField]
+    //private float nextFire = 0.5F;
+    [SerializeField]
+    private float positionBullet = 0.4F;
+    private float time;
     private bool isGrounded = false;
+
+    private Bullet bullet;
 
     private CharState State
     {
@@ -28,6 +34,8 @@ public class Character : Unit
         rigidbody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+
+        bullet = Resources.Load<Bullet>("Bullet");
     }
 
     private void FixedUpdate()
@@ -35,10 +43,44 @@ public class Character : Unit
         CheckGround();
     }
 
+    //IEnumerator BulletAnim()
+    //{
+    //    State = CharState.shoot;
+    //
+    //    yield return new WaitForSeconds(1);
+    //    Shoot();
+    //}
+
+    private void Shoot()
+    {
+        Vector3 position = transform.position;
+        position.y += positionBullet;
+        position.x += sprite.flipX ? -1.0F : 1.0F;
+        Bullet newBullet = Instantiate(bullet, position, bullet.transform.rotation) as Bullet;
+
+        newBullet.Direction = newBullet.transform.right * (sprite.flipX ? -1.0F : 1.0F) ;
+        
+    }
+
+    private IEnumerator ShootAction()
+    {
+        Shoot();
+        yield return new WaitForSeconds(0.5f);
+        State = CharState.shoot;
+    }
+
     private void Update()
     {
         if (isGrounded) State = CharState.idle;
+        if (isGrounded && (time += Time.deltaTime) > 1.0f)
+        {
+            if (Input.GetButton("Fire1"))
+            {               
+                time = 0.0f;
 
+                StartCoroutine(ShootAction());
+            }
+        }
         if (Input.GetButton("Horizontal")) Run();
         if (isGrounded &&  Input.GetButtonDown("Jump")) Jump();
     }
@@ -71,5 +113,6 @@ public enum CharState
 {
     idle,
     run,
-    jump
+    jump,
+    shoot
 }
