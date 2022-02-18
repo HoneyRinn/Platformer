@@ -62,25 +62,10 @@ public class Character : Unit
         
     }
 
-    private IEnumerator ShootAction()
-    {
-        Shoot();
-        yield return new WaitForSeconds(0.5f);
-        State = CharState.shoot;
-    }
-
     private void Update()
     {
         if (isGrounded) State = CharState.idle;
-        if (isGrounded && (time += Time.deltaTime) > 1.0f)
-        {
-            if (Input.GetButton("Fire1"))
-            {               
-                time = 0.0f;
-
-                StartCoroutine(ShootAction());
-            }
-        }
+        if (Input.GetButton("Fire1")) State = CharState.shoot;
         if (Input.GetButton("Horizontal")) Run();
         if (isGrounded &&  Input.GetButtonDown("Jump")) Jump();
     }
