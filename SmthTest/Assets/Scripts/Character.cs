@@ -10,8 +10,6 @@ public class Character : Unit
     private int lives = 5;
     [SerializeField]
     private float jumpForce = 15.0F;
-    //[SerializeField]
-    //private float nextFire = 0.5F;
     [SerializeField]
     private float positionBullet = 0.4F;
     private float time;
@@ -43,23 +41,16 @@ public class Character : Unit
         CheckGround();
     }
 
-    //IEnumerator BulletAnim()
-    //{
-    //    State = CharState.shoot;
-    //
-    //    yield return new WaitForSeconds(1);
-    //    Shoot();
-    //}
 
     private void Shoot()
     {
         Vector3 position = transform.position;
         position.y += positionBullet;
         position.x += sprite.flipX ? -1.0F : 1.0F;
+
         Bullet newBullet = Instantiate(bullet, position, bullet.transform.rotation) as Bullet;
 
         newBullet.Direction = newBullet.transform.right * (sprite.flipX ? -1.0F : 1.0F) ;
-        
     }
 
     private void Update()
